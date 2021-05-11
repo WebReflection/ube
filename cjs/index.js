@@ -12,25 +12,12 @@ const indexOf = Class => {
   return i < 0 ? (ube.push(Class) - 1) : i;
 };
 
-const augment = tag => function (template) {
-  const args = [template];
-  for (let i = 1, {length} = arguments; i < length; i++) {
-    let current = arguments[i];
-    if (typeof current === 'function' && 'tagName' in current) {
-      const {tagName} = current;
-      const prev = template[i - 1];
-      switch (prev[prev.length - 1]) {
-        case '<':
-          current = asStatic(`${tagName} ${UBE}=${indexOf(current)}`);
-          break;
-        case '/':
-          current = asStatic(tagName);
-          break;
-      }
-    }
-    args.push(current);
-  }
-  return tag.apply(this, asParams.apply(null, args));
+const augment = tag => {
+  function ube() { return reshaped.apply(tag, arguments); }
+  ube.for = (ref, id) => function () {
+    return reshaped.apply(tag.for(ref, id), arguments);
+  };
+  return ube;
 };
 
 function render(where) {
@@ -54,3 +41,24 @@ exports.SVG = SVG;
 exports.upgrade = upgrade;
 exports.downgrade = downgrade;
 exports.observer = observer;
+
+function reshaped(template) {
+  const args = [template];
+  for (let i = 1, {length} = arguments; i < length; i++) {
+    let current = arguments[i];
+    if (typeof current === 'function' && 'tagName' in current) {
+      const {tagName} = current;
+      const prev = template[i - 1];
+      switch (prev[prev.length - 1]) {
+        case '<':
+          current = asStatic(`${tagName} ${UBE}=${indexOf(current)}`);
+          break;
+        case '/':
+          current = asStatic(tagName);
+          break;
+      }
+    }
+    args.push(current);
+  }
+  return this.apply(null, asParams.apply(null, args));
+}

@@ -5,6 +5,7 @@ A [builtin-elements](https://github.com/WebReflection/builtin-elements#readme) b
   * based on [µhtml](https://github.com/WebReflection/uhtml#readme) engine
   * requires zero polyfills and it doesn't need a registry
   * works *SSR* too (coming soon)
+  * roughly *4KB* once minified and gzipped
 
 ```js
 // Some Builtin definition example
@@ -29,7 +30,7 @@ render(document.body, html`<${Div} data-hello="µbe" />`);
 ## Companions
 
   * [µhtml-intents](https://github.com/WebReflection/uhtml-intents#readme)
-  * [µhooks-intents](https://github.com/WebReflection/uhooks#readme)
+  * [µhooks](https://github.com/WebReflection/uhooks#readme)
 
 **[Live Demo](https://codepen.io/WebReflection/pen/gOmaXrZ?editors=0010)**
 

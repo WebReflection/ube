@@ -11,7 +11,30 @@ const indexOf = Class => {
   return i < 0 ? (ube.push(Class) - 1) : i;
 };
 
-const augment = tag => function (template) {
+const augment = tag => {
+  function ube() { return reshaped.apply(tag, arguments); }
+  ube.for = (ref, id) => function () {
+    return reshaped.apply(tag.for(ref, id), arguments);
+  };
+  return ube;
+};
+
+export function render(where) {
+  const result = urender.apply(this, arguments);
+  const be = where.querySelectorAll(`[${UBE}]`);
+  for (let i = 0, {length} = be; i < length; i++) {
+    const Class = ube[be[i].getAttribute(UBE)];
+    be[i].removeAttribute(UBE);
+    upgrade(be[i], Class);
+  }
+  return result;
+}
+
+export const html = augment(uhtml);
+export const svg = augment(usvg);
+export {HTML, SVG, upgrade, downgrade, observer};
+
+function reshaped(template) {
   const args = [template];
   for (let i = 1, {length} = arguments; i < length; i++) {
     let current = arguments[i];
@@ -29,20 +52,5 @@ const augment = tag => function (template) {
     }
     args.push(current);
   }
-  return tag.apply(this, asParams.apply(null, args));
-};
-
-export function render(where) {
-  const result = urender.apply(this, arguments);
-  const be = where.querySelectorAll(`[${UBE}]`);
-  for (let i = 0, {length} = be; i < length; i++) {
-    const Class = ube[be[i].getAttribute(UBE)];
-    be[i].removeAttribute(UBE);
-    upgrade(be[i], Class);
-  }
-  return result;
+  return this.apply(null, asParams.apply(null, args));
 }
-
-export const html = augment(uhtml);
-export const svg = augment(usvg);
-export {HTML, SVG, upgrade, downgrade, observer};

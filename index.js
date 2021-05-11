@@ -1140,33 +1140,17 @@ self.ube = (function (exports) {
   };
 
   var augment = function augment(tag) {
-    return function (template) {
-      var args = [template];
+    function ube() {
+      return reshaped.apply(tag, arguments);
+    }
 
-      for (var i = 1, length = arguments.length; i < length; i++) {
-        var current = arguments[i];
-
-        if (typeof current === 'function' && 'tagName' in current) {
-          var _current = current,
-              tagName = _current.tagName;
-          var prev = template[i - 1];
-
-          switch (prev[prev.length - 1]) {
-            case '<':
-              current = asStatic("".concat(tagName, " ").concat(UBE, "=").concat(indexOf(current)));
-              break;
-
-            case '/':
-              current = asStatic(tagName);
-              break;
-          }
-        }
-
-        args.push(current);
-      }
-
-      return tag.apply(this, asParams.apply(null, args));
+    ube["for"] = function (ref, id) {
+      return function () {
+        return reshaped.apply(tag["for"](ref, id), arguments);
+      };
     };
+
+    return ube;
   };
 
   function render(where) {
@@ -1183,6 +1167,34 @@ self.ube = (function (exports) {
   }
   var html = augment(html$1);
   var svg = augment(svg$1);
+
+  function reshaped(template) {
+    var args = [template];
+
+    for (var i = 1, length = arguments.length; i < length; i++) {
+      var current = arguments[i];
+
+      if (typeof current === 'function' && 'tagName' in current) {
+        var _current = current,
+            tagName = _current.tagName;
+        var prev = template[i - 1];
+
+        switch (prev[prev.length - 1]) {
+          case '<':
+            current = asStatic("".concat(tagName, " ").concat(UBE, "=").concat(indexOf(current)));
+            break;
+
+          case '/':
+            current = asStatic(tagName);
+            break;
+        }
+      }
+
+      args.push(current);
+    }
+
+    return this.apply(null, asParams.apply(null, args));
+  }
 
   exports.HTML = HTML;
   exports.SVG = SVG;
