@@ -3,7 +3,7 @@
 A [builtin-elements](https://github.com/WebReflection/builtin-elements#readme) based [µce](https://github.com/WebReflection/uce#readme) alternative:
 
   * based on [µhtml](https://github.com/WebReflection/uhtml#readme) engine
-  * requires zero polyfills
+  * requires zero polyfills and it doesn't need a registry
   * works *SSR* too (coming soon)
 
 ```js
@@ -54,3 +54,10 @@ class Div extends HTML.Div {
 
 render(document.body, html`Click test <${Div} />`);
 ```
+
+## Previous Work / Similar Libraries
+
+  * [kaboobie](https://github.com/WebReflection/kaboobie/#readme) is the most similar project, but the elements lifecycle is different, as these are replaced once discovered, while *builtin-elements* are real builtin elements with Custom Elements super power, hence more portable, and *SSR* compatible
+  * [µland](https://github.com/WebReflection/uland#readme), at the core of *kaboobie*, is the one that inspired me the most
+  * [wicked-elements](https://github.com/WebReflection/wicked-elements#readme) and [hooked-elements](https://github.com/WebReflection/hooked-elements#readme) also work in a similar way, and each element can have multiple definitions, but it requires a registry
+
