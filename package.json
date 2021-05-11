@@ -1,0 +1,45 @@
+{
+  "name": "ube",
+  "version": "0.0.0",
+  "description": "A builtin-elements based µce alternative",
+  "main": "./cjs/index.js",
+  "scripts": {
+    "build": "npm run cjs && npm run rollup:es && npm run rollup:babel && npm run min && npm run test",
+    "cjs": "ascjs esm cjs",
+    "rollup:es": "rollup --config rollup/es.config.js && sed -i.bck 's/^var /self./' es.js && rm -rf es.js.bck",
+    "rollup:babel": "rollup --config rollup/babel.config.js && sed -i.bck 's/^var /self./' index.js && rm -rf index.js.bck",
+    "min": "terser index.js --comments='/^!/' -c -m -o min.js",
+    "coveralls": "c8 report --reporter=text-lcov | coveralls",
+    "test": "# c8 node test/index.js"
+  },
+  "keywords": ["builtin", "custom", "elements", "zero", "polyfill"],
+  "author": "Andrea Giammarchi",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.0",
+    "ascjs": "^5.0.1",
+    "c8": "^7.7.2",
+    "coveralls": "^3.1.0",
+    "rollup": "^2.47.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "terser": "^5.7.0"
+  },
+  "module": "./esm/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "unpkg": "min.js",
+  "dependencies": {
+    "builtin-elements": "^0.3.0",
+    "static-params": "^0.1.3",
+    "uhtml": "^2.7.3"
+  }
+}
