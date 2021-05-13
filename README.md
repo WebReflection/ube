@@ -1,5 +1,7 @@
 # µbe
 
+![lego board with µbe logo](./ube.jpg)
+
 <sup>**Original Social Media Photo by [JOSE LARRAZOLO](https://unsplash.com/@joseadd) on [Unsplash](https://unsplash.com/)**</sup>
 
 A [builtin-elements](https://github.com/WebReflection/builtin-elements#readme) based [µce](https://github.com/WebReflection/uce#readme) alternative:
