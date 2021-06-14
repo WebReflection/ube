@@ -8,7 +8,7 @@ A [builtin-elements](https://github.com/WebReflection/builtin-elements#readme) b
 
   * based on [µhtml](https://github.com/WebReflection/uhtml#readme) engine
   * requires zero polyfills and it doesn't need a registry
-  * works *SSR* too (coming soon)
+  * works **[SSR](https://github.com/WebReflection/ube-ssr)** too (*islands out of the box*)
   * roughly *4KB* once minified and gzipped
 
 ```js
