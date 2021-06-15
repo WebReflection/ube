@@ -1,4 +1,4 @@
-import {bind, createPragma, defaultAttribute} from 'jsx2tag';
+import {createPragma} from 'jsx2tag';
 import {html} from './index.js';
 
 const createElement = createPragma(html);
@@ -7,5 +7,5 @@ self.React = {
   Fragment: createElement
 };
 
-export {bind, createPragma, defaultAttribute};
+export * from 'jsx2tag';
 export * from './index.js';
