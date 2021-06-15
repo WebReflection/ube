@@ -1,5 +1,5 @@
 'use strict';
-const {createPragma} = require('jsx2tag');
+const {bind, createPragma, defaultAttribute} = require('jsx2tag');
 const {html} = require('./index.js');
 
 const createElement = createPragma(html);
@@ -8,7 +8,8 @@ self.React = {
   Fragment: createElement
 };
 
-(m => Object.keys(m).map(k => k !== 'default' && (exports[k] = m[k])))
-(require('jsx2tag'));
+exports.bind = bind;
+exports.createPragma = createPragma;
+exports.defaultAttribute = defaultAttribute;
 (m => Object.keys(m).map(k => k !== 'default' && (exports[k] = m[k])))
 (require('./index.js'));
