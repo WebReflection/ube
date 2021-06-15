@@ -1,21 +1,7 @@
 self.ube = (function (exports) {
   'use strict';
 
-  function _typeof(obj) {
-    "@babel/helpers - typeof";
-
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
+  
 
   function _defineProperty(obj, key, value) {
     if (key in obj) {
@@ -722,7 +708,7 @@ self.ube = (function (exports) {
         nodes = [];
 
     var anyContent = function anyContent(newValue) {
-      switch (_typeof(newValue)) {
+      switch (typeof(newValue)) {
         // primitives are handled as text content
         case 'string':
         case 'number':
@@ -753,7 +739,7 @@ self.ube = (function (exports) {
             oldValue = newValue; // arrays can be used to cleanup, if empty
 
             if (newValue.length === 0) nodes = diff(comment, nodes, []); // or diffed, if these contains nodes or "wires"
-            else if (_typeof(newValue[0]) === 'object') nodes = diff(comment, nodes, newValue); // in all other cases the content is stringified as is
+            else if (typeof(newValue[0]) === 'object') nodes = diff(comment, nodes, newValue); // in all other cases the content is stringified as is
               else anyContent(String(newValue));
             break;
           } // if the new value is a DOM node, or a wire, and it's
