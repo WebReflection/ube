@@ -1,25 +1,8 @@
 self.ube = (function (exports) {
   'use strict';
 
-  
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
   /*! (c) Andrea Giammarchi - ISC */
-  if (!('isConnected' in Element.prototype)) Object.defineProperty(Element.prototype, 'isConnected', {
+  if (!('isConnected' in Node.prototype)) Object.defineProperty(Node.prototype, 'isConnected', {
     configurable: true,
     get: function get() {
       return !(this.ownerDocument.compareDocumentPosition(this) & this.DOCUMENT_POSITION_DISCONNECTED);
@@ -82,15 +65,47 @@ self.ube = (function (exports) {
     return observer;
   };
 
+  
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  var CALLBACK = 'Callback';
   var ELEMENT = 'Element';
   var CONSTRUCTOR = 'constructor';
   var PROTOTYPE = 'prototype';
-  var CALLBACK = 'Callback';
   var ATTRIBUTE_CHANGED_CALLBACK = 'attributeChanged' + CALLBACK;
   var CONNECTED_CALLBACK = 'connected' + CALLBACK;
   var DISCONNECTED_CALLBACK = 'dis' + CONNECTED_CALLBACK;
   var UPGRADED_CALLBACK = 'upgraded' + CALLBACK;
   var DOWNGRADED_CALLBACK = 'downgraded' + CALLBACK;
+  var HTMLSpecial = _defineProperty({
+    'Anchor': 'A',
+    'DList': 'DL',
+    'Directory': 'Dir',
+    'Heading': ['H6', 'H5', 'H4', 'H3', 'H2', 'H1'],
+    'Image': 'Img',
+    'OList': 'OL',
+    'Paragraph': 'P',
+    'TableCaption': 'Caption',
+    'TableCell': ['TH', 'TD'],
+    'TableRow': 'TR',
+    'UList': 'UL'
+  }, ELEMENT, ['Article', 'Aside', 'Footer', 'Header', 'Main', 'Nav', 'Section', ELEMENT]);
+
+  /*! (c) Andrea Giammarchi - ISC */
   var getOwnPropertyNames = Object.getOwnPropertyNames,
       setPrototypeOf = Object.setPrototypeOf;
   var attributes = new WeakMap();
@@ -164,21 +179,6 @@ self.ube = (function (exports) {
 
   var SVG = {};
   var HTML = {};
-
-  var HTMLSpecial = _defineProperty({
-    'Anchor': 'A',
-    'DList': 'DL',
-    'Directory': 'Dir',
-    'Heading': ['H6', 'H5', 'H4', 'H3', 'H2', 'H1'],
-    'Image': 'Img',
-    'OList': 'OL',
-    'Paragraph': 'P',
-    'TableCaption': 'Caption',
-    'TableCell': ['TH', 'TD'],
-    'TableRow': 'TR',
-    'UList': 'UL'
-  }, ELEMENT, ['Article', 'Aside', 'Footer', 'Header', 'Main', 'Nav', 'Section', ELEMENT]);
-
   getOwnPropertyNames(window).forEach(function (name) {
     if (/^(HTML|SVG)/.test(name)) {
       var Kind = RegExp.$1;

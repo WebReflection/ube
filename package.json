@@ -52,7 +52,7 @@
   },
   "unpkg": "min.js",
   "dependencies": {
-    "builtin-elements": "^0.3.0",
+    "builtin-elements": "^0.3.1",
     "jsx2tag": "^0.3.0",
     "static-params": "^0.2.1",
     "uhtml": "^2.7.5"
