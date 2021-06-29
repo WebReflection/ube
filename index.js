@@ -207,16 +207,25 @@ self.ube = (function (exports) {
     }
   });
 
-  var cache$2 = new WeakMap();
+  var cache$3 = new WeakMap();
 
-  var parse = function parse(template, values) {
+  function asParams(template) {
+    var _arguments = arguments;
+    var known = cache$3.get(template);
+    if (!known) cache$3.set(template, known = parse.apply(null, arguments));
+    return [known.t].concat(known.v.map(function (i) {
+      return _arguments[i];
+    }));
+  }
+
+  function parse(template) {
     var t = [template[0]];
     var v = [];
 
-    for (var c = 0, i = 0, j = 0, length = values.length; i < length; i++) {
-      if (values[i] instanceof Static) t[c] += values[i].v + template[i + 1];else {
+    for (var c = 0, j = 0, i = 1, length = arguments.length; i < length; i++) {
+      if (arguments[i] instanceof String) t[c] += arguments[i] + template[i];else {
         v[j++] = i;
-        t[++c] = template[i + 1];
+        t[++c] = template[i];
       }
     }
 
@@ -224,30 +233,11 @@ self.ube = (function (exports) {
       t: t,
       v: v
     };
-  };
+  }
 
   var asStatic = function asStatic(value) {
-    return new Static(value);
+    return new String(value);
   };
-
-  var asParams = function asParams(template) {
-    for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      values[_key - 1] = arguments[_key];
-    }
-
-    var _parse = parse(template, values),
-        t = _parse.t,
-        v = _parse.v;
-
-    var parsed = cache$2.get(template) || cache$2.set(template, {}).get(template);
-    return (parsed[t] || (parsed[t] = [t])).concat(v.map(function (i) {
-      return values[i];
-    }));
-  };
-
-  function Static(v) {
-    this.v = v;
-  }
 
   var umap = (function (_) {
     return {
@@ -830,7 +820,7 @@ self.ube = (function (exports) {
   // content, within the exact same amount of updates each time.
   // This cache relates each template to its unique content and updates.
 
-  var cache$1 = umap(new WeakMap()); // a RegExp that helps checking nodes that cannot contain comments
+  var cache$2 = umap(new WeakMap()); // a RegExp that helps checking nodes that cannot contain comments
 
   var textOnly = /^(?:plaintext|script|style|textarea|title|xmp)$/i;
   var createCache = function createCache() {
@@ -943,7 +933,7 @@ self.ube = (function (exports) {
 
 
   var mapUpdates = function mapUpdates(type, template) {
-    var _ref = cache$1.get(template) || cache$1.set(template, mapTemplate(type, template)),
+    var _ref = cache$2.get(template) || cache$2.set(template, mapTemplate(type, template)),
         content = _ref.content,
         nodes = _ref.nodes; // clone deeply the fragment
 
@@ -1090,7 +1080,7 @@ self.ube = (function (exports) {
   }; // each rendered node gets its own cache
 
 
-  var cache = umap(new WeakMap()); // rendering means understanding what `html` or `svg` tags returned
+  var cache$1 = umap(new WeakMap()); // rendering means understanding what `html` or `svg` tags returned
   // and it relates a specific node to its own unique cache.
   // Each time the content to render changes, the node is cleaned up
   // and the new new content is appended, and if such content is a Hole
@@ -1098,7 +1088,7 @@ self.ube = (function (exports) {
 
   var render$1 = function render(where, what) {
     var hole = typeof what === 'function' ? what() : what;
-    var info = cache.get(where) || cache.set(where, createCache());
+    var info = cache$1.get(where) || cache$1.set(where, createCache());
     var wire = hole instanceof Hole ? unroll(info, hole) : hole;
 
     if (wire !== info.wire) {
@@ -1118,6 +1108,7 @@ self.ube = (function (exports) {
   var svg$1 = tag('svg');
 
   var UBE = 'data-ube';
+  var cache = new WeakMap();
   var ube = [];
 
   var indexOf = function indexOf(Class) {
@@ -1154,29 +1145,46 @@ self.ube = (function (exports) {
   var html = augment(html$1);
   var svg = augment(svg$1);
 
-  function reshaped(template) {
-    var args = [template];
+  function reshaped() {
+    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
 
-    for (var i = 1, length = arguments.length; i < length; i++) {
-      var current = arguments[i];
+    var template = args[0];
+    var known = cache.get(template);
 
-      if (typeof current === 'function' && 'tagName' in current) {
-        var _current = current,
-            tagName = _current.tagName;
-        var prev = template[i - 1];
+    if (known) {
+      for (var i = 0, _known = known, length = _known.length; i < length; i++) {
+        args[known[i].i] = known[i].v;
+      }
+    } else {
+      cache.set(template, known = []);
 
-        switch (prev[prev.length - 1]) {
-          case '<':
-            current = asStatic("".concat(tagName, " ").concat(UBE, "=").concat(indexOf(current)));
-            break;
+      for (var _i = 1, _length = args.length; _i < _length; _i++) {
+        var current = args[_i];
 
-          case '/':
-            current = asStatic(tagName);
-            break;
+        if (typeof current === 'function' && 'tagName' in current) {
+          var _current = current,
+              tagName = _current.tagName;
+          var prev = template[_i - 1];
+
+          switch (prev[prev.length - 1]) {
+            case '<':
+              current = asStatic("".concat(tagName, " ").concat(UBE, "=").concat(indexOf(current)));
+              break;
+
+            case '/':
+              current = asStatic(tagName);
+              break;
+          }
+
+          known.push({
+            i: _i,
+            v: current
+          });
+          args[_i] = current;
         }
       }
-
-      args.push(current);
     }
 
     return this.apply(null, asParams.apply(null, args));

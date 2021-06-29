@@ -5,13 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>ube</title>
   <script type="module">
-  import(
-    /^(?:localhost|[::1]|127(?:.d+){3})$/.test(location.hostname) ?
-    '../esm/index.js' :
-    'https://unpkg.com/ube?module'
-  )
-  .then(({HTML, render, html}) => {
-
+  import('../index.js')
+  .then(() => {
+    const {HTML, render, html} = ube;
     class Div extends HTML.Div {
       upgradedCallback() {
         // this.textContent and this.innerHTML work too
@@ -21,7 +17,12 @@
       }
     }
 
-    render(document.body, html`<${Div} data-hello="µbe" />`);
+    function show() {
+      render(document.body, html`<${Div} data-hello="µbe" />`);
+    }
+
+    show();
+    show();
   });
   </script>
 </head>

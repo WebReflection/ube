@@ -1,9 +1,10 @@
 import {HTML, SVG, upgrade, downgrade, observer} from 'builtin-elements';
-import {asParams, asStatic} from 'static-params';
+import {asParams, asStatic} from 'static-params/strict';
 import {render as urender, html as uhtml, svg as usvg} from 'uhtml';
 
 const UBE = 'data-ube';
 
+const cache = new WeakMap;
 const ube = [];
 
 const indexOf = Class => {
@@ -34,23 +35,32 @@ export const html = augment(uhtml);
 export const svg = augment(usvg);
 export {HTML, SVG, upgrade, downgrade, observer};
 
-function reshaped(template) {
-  const args = [template];
-  for (let i = 1, {length} = arguments; i < length; i++) {
-    let current = arguments[i];
-    if (typeof current === 'function' && 'tagName' in current) {
-      const {tagName} = current;
-      const prev = template[i - 1];
-      switch (prev[prev.length - 1]) {
-        case '<':
-          current = asStatic(`${tagName} ${UBE}=${indexOf(current)}`);
-          break;
-        case '/':
-          current = asStatic(tagName);
-          break;
+function reshaped(...args) {
+  const [template] = args;
+  let known = cache.get(template);
+  if (known) {
+    for (let i = 0, {length} = known; i < length; i++)
+      args[known[i].i] = known[i].v;
+  }
+  else {
+    cache.set(template, known = []);
+    for (let i = 1, {length} = args; i < length; i++) {
+      let current = args[i];
+      if (typeof current === 'function' && 'tagName' in current) {
+        const {tagName} = current;
+        const prev = template[i - 1];
+        switch (prev[prev.length - 1]) {
+          case '<':
+            current = asStatic(`${tagName} ${UBE}=${indexOf(current)}`);
+            break;
+          case '/':
+            current = asStatic(tagName);
+            break;
+        }
+        known.push({i, v: current});
+        args[i] = current;
       }
     }
-    args.push(current);
   }
   return this.apply(null, asParams.apply(null, args));
 }
